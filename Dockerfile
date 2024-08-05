@@ -8,6 +8,9 @@ RUN RUSTFLAGS="-C target-feature=+crt-static" cargo build --release --target x86
 
 FROM debian as base
 
+# Set the Nethack version
+ENV NH_SHORT_VERSION=367
+ENV NH_VERSION=3.6.7
 RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y autoconf bison \
@@ -18,12 +21,12 @@ RUN \
 RUN locale-gen en_US.UTF-8
 
 RUN mkdir /home/nethack-temp/ && cd /home/nethack-temp/ && \
-  wget http://nethack.org/download/3.6.7/nethack-367-src.tgz && \
-  tar -xzf nethack-367-src.tgz && cd NetHack-3.6.7
+  wget http://nethack.org/download/$NH_VERSION/nethack-$NH_SHORT_VERSION-src.tgz && \
+  tar -xzf nethack-$NH_SHORT_VERSION-src.tgz && cd NetHack-$NH_VERSION
 
-ADD hints /home/nethack-temp/NetHack-3.6.7/hints
+ADD hints /home/nethack-temp/NetHack-$NH_VERSION/hints
 
-RUN cd /home/nethack-temp/NetHack-3.6.7 && \
+RUN cd /home/nethack-temp/NetHack-$NH_VERSION && \
       sed -i '/enter_explore_mode(VOID_ARGS)/{n;s/{/{ return 0;/}' src/cmd.c && \
       sh sys/unix/setup.sh hints && make all && make install
 
@@ -33,24 +36,25 @@ RUN git clone https://github.com/paxed/dgamelaunch.git && \
   make && \
   sed -i \
     -e 's/^CHROOT=.*/CHROOT=\"\/home\/nethack\/\"/g' \
-    -e 's/^NHSUBDIR=.*/NHSUBDIR=\"\/nh367\/\"/g' \
-    -e 's/^NH_VAR_PLAYGROUND=.*/NH_VAR_PLAYGROUND=\"\/nh367\/var\/\"/g' \
-    -e 's/^NH_PLAYGROUND_FIXED=.*/NH_PLAYGROUND_FIXED=\"\/home\/nethack-compiled\/nh367\"/g' \
-    -e 's/nh343/nh367/g' dgl-create-chroot && \
+    -e "s/^NHSUBDIR=.*/NHSUBDIR=\"\/nh$NH_SHORT_VERSION\/\"/g" \
+    -e "s/^NH_VAR_PLAYGROUND=.*/NH_VAR_PLAYGROUND=\"\/nh$NH_SHORT_VERSION\/var\/\"/g" \
+    -e "s/^NH_PLAYGROUND_FIXED=.*/NH_PLAYGROUND_FIXED=\"\/home\/nethack-compiled\/nh$NH_SHORT_VERSION\"/g" \
+    -e "s/nh343/nh$NH_SHORT_VERSION/g" dgl-create-chroot && \
   ./dgl-create-chroot
 
-RUN mv /home/nethack/nh367/var/ /home/nethack/ && \
-  mv -f /nh367 /home/nethack/ && \
-  chown -R games:games /home/nethack/nh367
-  
+RUN mv /home/nethack/nh$NH_SHORT_VERSION/var/ /home/nethack/ && \
+  mv -f /nh$NH_SHORT_VERSION /home/nethack/ && \
+  chown -R games:games /home/nethack/nh$NH_SHORT_VERSION
+
 RUN sed -i \
   -e 's/^chroot_path =.*/chroot_path = \"\/home\/nethack\/\"/g' \
   -e 's/# menu_max_idle_time/menu_max_idle_time/g' \
   -e '/play_game \"NH343\"/a \        commands\[\"h\"\] = exec \"\/highscore\" \"\"' \
-  -e 's/343/367/g' /home/nethack/etc/dgamelaunch.conf
+  -e "s/NetHack 3.4.3/NetHack $NH_VERSION/g" \
+  -e "s/343/$NH_SHORT_VERSION/g" /home/nethack/etc/dgamelaunch.conf
 
 RUN sed -i '/ p)/a \ h) Highscore' /home/nethack/dgl_menu_main_user.txt && \
-    sed -i 's/boulder:0/boulder:`/g' /home/nethack/dgl-default-rcfile.nh367
+    sed -i 's/boulder:0/boulder:`/g' /home/nethack/dgl-default-rcfile.nh$NH_SHORT_VERSION
 
 RUN cp /usr/lib/x86_64-linux-gnu/libncurses.so.6 /home/nethack/lib && cp /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 /home/nethack/lib
 
