@@ -6,6 +6,15 @@ COPY ./nethack .
 
 RUN RUSTFLAGS="-C target-feature=+crt-static" cargo build --release --target x86_64-unknown-linux-gnu
 
+FROM rust:buster as robots
+LABEL maintainer="schizo99@gmail.com"
+
+WORKDIR /build
+COPY ./robots .
+
+RUN RUSTFLAGS="-C target-feature=+crt-static" cargo build --release --target x86_64-unknown-linux-gnu
+
+
 FROM debian as base
 
 # Set the Nethack version
@@ -50,10 +59,14 @@ RUN sed -i \
   -e 's/^chroot_path =.*/chroot_path = \"\/home\/nethack\/\"/g' \
   -e 's/# menu_max_idle_time/menu_max_idle_time/g' \
   -e '/play_game \"NH343\"/a \        commands\[\"h\"\] = exec \"\/highscore\" \"\"' \
+  #-e '/play_game \"NH343\"/a \        commands\[\"h\"\] = exec \"\/highscore\" \"\"' \
   -e "s/NetHack 3.4.3/NetHack $NH_VERSION/g" \
   -e "s/343/$NH_SHORT_VERSION/g" /home/nethack/etc/dgamelaunch.conf
 
-RUN sed -i '/ p)/a \ h) Highscore' /home/nethack/dgl_menu_main_user.txt && \
+RUN sed -i \
+    -e '/ p)/a \ h) Highscore' \
+    -e '/ p)/a \ r) Play Robots' \
+    -e "s/NetHack 3.4.3/NetHack $NH_VERSION/g" /home/nethack/dgl_menu_main_user.txt && \
     sed -i 's/boulder:0/boulder:`/g' /home/nethack/dgl-default-rcfile.nh$NH_SHORT_VERSION
 
 RUN cp /usr/lib/x86_64-linux-gnu/libncurses.so.6 /home/nethack/lib && cp /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 /home/nethack/lib
@@ -75,6 +88,7 @@ RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/
 # Ensure the SSH daemon listens on port 22
 
 COPY --from=builder /build/target/x86_64-unknown-linux-gnu/release/nethack /home/nethack/highscore
+COPY --from=robots /build/target/x86_64-unknown-linux-gnu/release/robots /home/nethack/robots
 # Configure SSH to use the custom script
 RUN echo "command=\"/home/nethack/dgamelaunch\" ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCyQJUz91Q0L9F4EtPpI8VfV5p2VoJYx1qOQ7kTQi0NiP4lRT0i... user@host" >> /root/.ssh/authorized_keys && \
     echo "ForceCommand /home/nethack/dgamelaunch" >> /etc/ssh/sshd_config
