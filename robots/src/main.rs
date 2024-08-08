@@ -2,6 +2,7 @@ use std::fs::OpenOptions;
 use std::io::prelude::*;
 use clap::Parser;
 use rand::Rng;
+use console::Term;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -27,7 +28,7 @@ fn validate_highscore_file(path: &str) {
             return;
         }
         Err(_) => {
-            match std::fs::write(path, "") {
+            match std::fs::write(path, "Highscores:\n\n") {
                 Ok(_) => {
                     println!("Highscorefile created successfully");
                 }
@@ -60,10 +61,15 @@ fn main() {
     let path = args.path;
     validate_highscore_file(&path);
     if args.show_highscore {
-        println!("Showing highscore");
         let content = std::fs::read_to_string(&path).unwrap();
-        println!("{}", content);
-        return;
+        let term = Term::stdout();
+        term.clear_screen().expect("Failed to clear terminal");
+        term.hide_cursor().expect("Failed to hide cursor");
+        term.write_line(&content).expect("Failed to write to terminal");
+        term.write_line("<More>").expect("Failed to write to terminal");
+        term.read_key().expect("Failed to read key");
+        term.show_cursor().expect("Failed to show cursor");
+        std::process::exit(0);
     }
     add_dummy_score(&username, &path)
 }
