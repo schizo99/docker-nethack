@@ -6,15 +6,6 @@ COPY ./nethack .
 
 RUN RUSTFLAGS="-C target-feature=+crt-static" cargo build --release --target x86_64-unknown-linux-gnu
 
-FROM rust:buster as robots
-LABEL maintainer="schizo99@gmail.com"
-
-WORKDIR /build
-COPY ./robots .
-
-RUN RUSTFLAGS="-C target-feature=+crt-static" cargo build --release --target x86_64-unknown-linux-gnu
-
-
 FROM debian as base
 
 # Set the Nethack version
@@ -34,12 +25,13 @@ RUN mkdir /home/nethack-temp/ && cd /home/nethack-temp/ && \
   tar -xzf nethack-$NH_SHORT_VERSION-src.tgz && cd NetHack-$NH_VERSION
 
 ADD hints /home/nethack-temp/NetHack-$NH_VERSION/hints
-ADD robots.txt /dgamelaunch/robots.txt
+ADD robots.txt /robots.txt
 RUN cd /home/nethack-temp/NetHack-$NH_VERSION && \
       sed -i '/enter_explore_mode(VOID_ARGS)/{n;s/{/{ return 0;/}' src/cmd.c && \
       sh sys/unix/setup.sh hints && make all && make install
 
 RUN git clone https://github.com/paxed/dgamelaunch.git && \
+  cp /robots.txt dgamelaunch/robots.txt && \
   cd dgamelaunch && \
   ./autogen.sh --enable-sqlite --enable-shmem --with-config-file=/home/nethack/etc/dgamelaunch.conf && \
   make && \
@@ -69,6 +61,8 @@ RUN sed -i \
     -e '/ p)/a \ r) Play Robots' \
     -e "s/NetHack 3.4.3/NetHack $NH_VERSION/g" /home/nethack/dgl_menu_main_user.txt && \
     sed -i 's/boulder:0/boulder:`/g' /home/nethack/dgl-default-rcfile.nh$NH_SHORT_VERSION
+
+RUN mkdir /home/nethack/dgldir/inprogress-robots && chown games:games /home/nethack/dgldir/inprogress-robots
 
 RUN cp /usr/lib/x86_64-linux-gnu/libncurses.so.6 /home/nethack/lib && cp /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 /home/nethack/lib
 

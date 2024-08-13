@@ -5,3 +5,4 @@ DEFINE {
   game_args = "/robots", "-u", "%n"
   inprogressdir = "%rinprogress-robots/"
 }
+
