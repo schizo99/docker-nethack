@@ -8,7 +8,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
+        with:
+          repository: schizo99/robots
+          path: robots
+      - name: Rust build
+        run: |
+          cd robots
+          RUSTFLAGS="-C target-feature=+crt-static" cargo build --release --target x86_64-unknown-linux-gnu
+          copy target/x86_64-unknown-linux-gnu/release/robots ../robots
+      - name: ls
+        run: |
+          ls -l robots
+          ls -l robots/target/x86_64-unknown-linux-gnu/release
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
@@ -16,10 +30,10 @@ jobs:
         with:
           images: schizo99/nethack
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: ./Dockerfile
-          push: false
-          tags: ${{ steps.meta.outputs.tags }}
+      # - name: Build and push Docker image
+      #   uses: docker/build-push-action@v5
+      #   with:
+      #     context: .
+      #     file: ./Dockerfile
+      #     push: false
+      #     tags: ${{ steps.meta.outputs.tags }}
