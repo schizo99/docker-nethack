@@ -16,7 +16,7 @@ jobs:
         run: |
           cd robots
           RUSTFLAGS="-C target-feature=+crt-static" cargo build --release --target x86_64-unknown-linux-gnu
-          copy target/x86_64-unknown-linux-gnu/release/robots ../robots
+          cp target/x86_64-unknown-linux-gnu/release/robots ../robots
       - name: ls
         run: |
           ls -l robots
