@@ -1,0 +1,7 @@
+DEFINE {
+  game_path = "/robots"
+  game_name = "Robots"
+  short_name = "ROBOTS"
+  game_args = "/robots", "-u", "%n"
+  inprogressdir = "%rinprogress-robots/"
+}

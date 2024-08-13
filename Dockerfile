@@ -34,7 +34,7 @@ RUN mkdir /home/nethack-temp/ && cd /home/nethack-temp/ && \
   tar -xzf nethack-$NH_SHORT_VERSION-src.tgz && cd NetHack-$NH_VERSION
 
 ADD hints /home/nethack-temp/NetHack-$NH_VERSION/hints
-
+ADD robots.txt /dgamelaunch/robots.txt
 RUN cd /home/nethack-temp/NetHack-$NH_VERSION && \
       sed -i '/enter_explore_mode(VOID_ARGS)/{n;s/{/{ return 0;/}' src/cmd.c && \
       sh sys/unix/setup.sh hints && make all && make install
@@ -59,7 +59,8 @@ RUN sed -i \
   -e 's/^chroot_path =.*/chroot_path = \"\/home\/nethack\/\"/g' \
   -e 's/# menu_max_idle_time/menu_max_idle_time/g' \
   -e '/play_game \"NH343\"/a \        commands\[\"h\"\] = exec \"\/highscore\" \"\"' \
-  #-e '/play_game \"NH343\"/a \        commands\[\"h\"\] = exec \"\/highscore\" \"\"' \
+  -e '/play_game \"NH343\"/a \        commands\[\"r\"\] = play_game \"\ROBOTS\"' \
+  -e '/# third game/ r robots.txt' \
   -e "s/NetHack 3.4.3/NetHack $NH_VERSION/g" \
   -e "s/343/$NH_SHORT_VERSION/g" /home/nethack/etc/dgamelaunch.conf
 
