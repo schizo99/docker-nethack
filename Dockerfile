@@ -88,7 +88,7 @@ RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/
 # Ensure the SSH daemon listens on port 22
 
 COPY --from=builder /build/target/x86_64-unknown-linux-gnu/release/nethack /home/nethack/highscore
-COPY --from=robots /build/target/x86_64-unknown-linux-gnu/release/robots /home/nethack/robots
+COPY robots /home/nethack/robots
 # Configure SSH to use the custom script
 RUN echo "command=\"/home/nethack/dgamelaunch\" ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCyQJUz91Q0L9F4EtPpI8VfV5p2VoJYx1qOQ7kTQi0NiP4lRT0i... user@host" >> /root/.ssh/authorized_keys && \
     echo "ForceCommand /home/nethack/dgamelaunch" >> /etc/ssh/sshd_config
