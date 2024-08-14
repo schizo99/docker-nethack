@@ -4,6 +4,7 @@ DEFINE {
   short_name = "ROBOTS"
   game_args = "/robots", "-u", "%n", "-p", "/dgldir/highscore.txt"
   inprogressdir = "%rinprogress-robots/"
+  ttyrecdir = "%ruserdata/%n/ttyrec/"
 }
 
 DEFINE {
