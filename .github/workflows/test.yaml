@@ -8,7 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@master
+        uses: actions/checkout@v4
+
+      - name: Get robots
+        run: |
+          wget $(curl -s https://api.github.com/repos/schizo99/robots/releases/latest  | \
+            jq -r '.assets[] | select(.name | contains ("robots")) | .browser_download_url')
+          tar -xvf robots_x86_64-linux.tar.gz robots
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
