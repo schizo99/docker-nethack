@@ -12,7 +12,8 @@ jobs:
 
       - name: Get robots
         run: |
-          wget https://github.com/schizo99/robots/releases/download/v0.1.0/robots_x86_64-linux.tar.gz
+          wget $(curl -s https://api.github.com/repos/schizo99/robots/releases/latest  | \
+            jq -r '.assets[] | select(.name | contains ("robots")) | .browser_download_url')
           tar -xvf robots_x86_64-linux.tar.gz robots
 
       - name: Extract metadata (tags, labels) for Docker
