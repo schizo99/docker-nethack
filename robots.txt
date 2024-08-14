@@ -2,7 +2,7 @@ DEFINE {
   game_path = "/robots"
   game_name = "Robots"
   short_name = "ROBOTS"
-  game_args = "/robots", "-u", "%n", "-p" "/dgldir/highscore.txt"
+  game_args = "/robots", "-u", "%n", "-p", "/dgldir/highscore.txt"
   inprogressdir = "%rinprogress-robots/"
 }
 
@@ -10,6 +10,6 @@ DEFINE {
   game_path = "/robots"
   game_name = "Robots"
   short_name = "ROBOTS_HIGHSCORE"
-  game_args = "/robots", "-s", "-p" "/dgldir/highscore.txt"
+  game_args = "/robots", "-s", "-p", "/dgldir/highscore.txt"
   inprogressdir = "%rinprogress-robots/"
 }
