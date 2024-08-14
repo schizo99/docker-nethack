@@ -50,15 +50,17 @@ RUN mv /home/nethack/nh$NH_SHORT_VERSION/var/ /home/nethack/ && \
 RUN sed -i \
   -e 's/^chroot_path =.*/chroot_path = \"\/home\/nethack\/\"/g' \
   -e 's/# menu_max_idle_time/menu_max_idle_time/g' \
-  -e '/play_game \"NH343\"/a \        commands\[\"h\"\] = exec \"\/highscore\" \"\"' \
   -e '/play_game \"NH343\"/a \        commands\[\"r\"\] = play_game \"\ROBOTS\"' \
+  -e '/play_game \"NH343\"/a \        commands\[\"h\"\] = exec \"\/highscore\" \"\"' \
+  -e '/play_game \"NH343\"/a \        commands\[\"t\"\] = play_game \"ROBOTS_HIGHSCORE\"' \
   -e '/# third game/ r robots.txt' \
   -e "s/NetHack 3.4.3/NetHack $NH_VERSION/g" \
   -e "s/343/$NH_SHORT_VERSION/g" /home/nethack/etc/dgamelaunch.conf
 
 RUN sed -i \
-    -e '/ p)/a \ h) Highscore' \
     -e '/ p)/a \ r) Play Robots' \
+    -e '/ p)/a \ h) Nethack highscore' \
+    -e '/ p)/a \ t) Robots highscore' \
     -e "s/NetHack 3.4.3/NetHack $NH_VERSION/g" /home/nethack/dgl_menu_main_user.txt && \
     sed -i 's/boulder:0/boulder:`/g' /home/nethack/dgl-default-rcfile.nh$NH_SHORT_VERSION
 
