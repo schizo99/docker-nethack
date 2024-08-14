@@ -16,6 +16,11 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
 
+    - name: Get robots
+      run: |
+        wget https://github.com/schizo99/robots/releases/download/v0.1.0/robots_x86_64-linux.tar.gz
+        tar -xvf robots_x86_64-linux.tar.gz robots
+
     - name: Extract metadata (tags, labels) for Docker
       id: meta
       uses: docker/metadata-action@v5

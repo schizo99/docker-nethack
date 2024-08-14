@@ -10,17 +10,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          repository: schizo99/robots
-          path: robots
-
-      - name: Rust build
+      - name: Get robots
         run: |
-          cd robots
-          RUSTFLAGS="-C target-feature=+crt-static" cargo build --release --target x86_64-unknown-linux-gnu
-          cp target/x86_64-unknown-linux-gnu/release/robots ../robots
+          wget https://github.com/schizo99/robots/releases/download/v0.1.0/robots_x86_64-linux.tar.gz
+          tar -xvf robots_x86_64-linux.tar.gz robots
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
