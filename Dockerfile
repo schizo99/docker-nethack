@@ -91,4 +91,4 @@ RUN echo "command=\"/home/nethack/dgamelaunch\" ssh-rsa AAAAB3NzaC1yc2EAAAADAQAB
     echo "ForceCommand /home/nethack/dgamelaunch" >> /etc/ssh/sshd_config
 EXPOSE 22
 # Start the SSH service
-CMD ["/usr/sbin/sshd", "-D"]
+CMD ["/usr/sbin/sshd", "-De"]
