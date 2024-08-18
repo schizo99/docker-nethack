@@ -33,6 +33,15 @@ RUN cd /home/nethack-temp/NetHack-$NH_VERSION && \
 RUN git clone https://github.com/paxed/dgamelaunch.git && \
   cp /robots.txt dgamelaunch/robots.txt && \
   cd dgamelaunch && \
+  sed -i '/loggedin = 1/a \
+    time_t rawtime; \
+    struct tm *timeinfo; \
+    char time_buffer[20]; \
+    time(&rawtime); \
+    timeinfo = localtime(&rawtime); \
+    strftime(time_buffer, sizeof(time_buffer), "%Y-%m-%d %H:%M:%S", timeinfo); \
+    fprintf(stderr, "[%s] Welcome, %s!\\n", time_buffer, me->username); \
+    fflush(stderr);' dgamelaunch.c && \
   ./autogen.sh --enable-sqlite --enable-shmem --with-config-file=/home/nethack/etc/dgamelaunch.conf && \
   make && \
   sed -i \
@@ -88,7 +97,7 @@ COPY --from=builder /build/target/x86_64-unknown-linux-gnu/release/nethack /home
 COPY robots /home/nethack/robots
 # Configure SSH to use the custom script
 RUN echo "command=\"/home/nethack/dgamelaunch\" ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCyQJUz91Q0L9F4EtPpI8VfV5p2VoJYx1qOQ7kTQi0NiP4lRT0i... user@host" >> /root/.ssh/authorized_keys && \
-    echo "ForceCommand /home/nethack/dgamelaunch" >> /etc/ssh/sshd_config
+    echo "ForceCommand /home/nethack/dgamelaunch 2> /home/nethack/dgldir/login.log" >> /etc/ssh/sshd_config
 EXPOSE 22
 # Start the SSH service
-CMD ["/usr/sbin/sshd", "-De"]
+CMD ["/usr/sbin/sshd", "-D"]
