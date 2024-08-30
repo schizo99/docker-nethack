@@ -26,6 +26,12 @@ jobs:
           jq -r '.assets[] | select(.name | contains ("robots")) | .browser_download_url')
         tar -xvf robots_x86_64-linux.tar.gz robots
 
+    - name: Get hypertyper
+      run: |
+        wget $(curl -s https://api.github.com/repos/schizo99/hypertyper/releases/latest  | \
+          jq -r '.assets[] | select(.name | contains ("hypertyper")) | .browser_download_url')
+        tar -xvf hypertyper_x86_64-linux.tar.gz hypertyper
+
     - name: Extract metadata (tags, labels) for Docker
       id: meta
       uses: docker/metadata-action@v5
