@@ -30,7 +30,7 @@ jobs:
       run: |
         wget $(curl -s https://api.github.com/repos/schizo99/hypertyper/releases/latest  | \
           jq -r '.assets[] | select(.name | contains ("hypertyper")) | .browser_download_url')
-        tar -xvf hypertyper_x86_64-linux.tar.gz hypertyper
+        tar -xvf hypertyper_x86_64-linux.tar.gz hypertyper words_alpha.txt
 
     - name: Extract metadata (tags, labels) for Docker
       id: meta
