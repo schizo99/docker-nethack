@@ -20,7 +20,7 @@ DEFINE {
   game_name = "Hypertyper"
   short_name = "HYPERTYPER"
   game_args = "/hypertyper", "-u", "%n", "-p", "/dgldir/ht_highscore.txt"
-  inprogressdir = "%rinprogress-robots/"
+  inprogressdir = "%rinprogress-hypertyper/"
   ttyrecdir = "%ruserdata/%n/ttyrec/"
 }
 
@@ -29,5 +29,5 @@ DEFINE {
   game_name = "Hypertyper"
   short_name = "HYPERTYPER_HIGHSCORE"
   game_args = "/hypertyper", "-s", "-p", "/dgldir/ht_highscore.txt"
-  inprogressdir = "%rinprogress-robots/"
+  inprogressdir = "%rinprogress-hypertyper/"
 }

@@ -77,7 +77,8 @@ RUN sed -i \
     -e "s/NetHack 3.4.3/NetHack $NH_VERSION/g" /home/nethack/dgl_menu_main_user.txt && \
     sed -i 's/boulder:0/boulder:`/g' /home/nethack/dgl-default-rcfile.nh$NH_SHORT_VERSION
 
-RUN mkdir /home/nethack/dgldir/inprogress-robots && chown games:games /home/nethack/dgldir/inprogress-robots
+RUN mkdir /home/nethack/dgldir/inprogress-robots && chown games:games /home/nethack/dgldir/inprogress-robots && \
+    mkdir /home/nethack/dgldir/inprogress-hypertyper && chown games:games /home/nethack/dgldir/inprogress-hypertyper
 
 RUN cp /usr/lib/x86_64-linux-gnu/libncurses.so.6 /home/nethack/lib && cp /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 /home/nethack/lib
 
