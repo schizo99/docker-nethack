@@ -25,13 +25,13 @@ RUN mkdir /home/nethack-temp/ && cd /home/nethack-temp/ && \
   tar -xzf nethack-$NH_SHORT_VERSION-src.tgz && cd NetHack-$NH_VERSION
 
 ADD hints /home/nethack-temp/NetHack-$NH_VERSION/hints
-ADD robots.txt /robots.txt
+ADD games.txt /games.txt
 RUN cd /home/nethack-temp/NetHack-$NH_VERSION && \
       sed -i '/enter_explore_mode(VOID_ARGS)/{n;s/{/{ return 0;/}' src/cmd.c && \
       sh sys/unix/setup.sh hints && make all && make install
 
 RUN git clone https://github.com/paxed/dgamelaunch.git && \
-  cp /robots.txt dgamelaunch/robots.txt && \
+  cp /games.txt dgamelaunch/games.txt && \
   cd dgamelaunch && \
   sed -i '/loggedin = 1/a \
     time_t rawtime; \
@@ -60,16 +60,20 @@ RUN sed -i \
   -e 's/^chroot_path =.*/chroot_path = \"\/home\/nethack\/\"/g' \
   -e 's/# menu_max_idle_time/menu_max_idle_time/g' \
   -e '/play_game \"NH343\"/a \        commands\[\"r\"\] = play_game \"\ROBOTS\"' \
+  -e '/play_game \"NH343\"/a \        commands\[\"y\"\] = play_game \"\HYPERTYPER\"' \
   -e '/play_game \"NH343\"/a \        commands\[\"h\"\] = exec \"\/highscore\" \"\"' \
   -e '/play_game \"NH343\"/a \        commands\[\"t\"\] = play_game \"ROBOTS_HIGHSCORE\"' \
-  -e '/# third game/ r robots.txt' \
+  -e '/play_game \"NH343\"/a \        commands\[\"u\"\] = play_game \"HYPERTYPER_HIGHSCORE\"' \
+  -e '/# third game/ r games.txt' \
   -e "s/NetHack 3.4.3/NetHack $NH_VERSION/g" \
   -e "s/343/$NH_SHORT_VERSION/g" /home/nethack/etc/dgamelaunch.conf
 
 RUN sed -i \
     -e '/ p)/a \ r) Play Robots' \
+    -e '/ p)/a \ y) Play Hypertyper' \
     -e '/ p)/a \ h) Nethack highscore' \
     -e '/ p)/a \ t) Robots highscore' \
+    -e '/ p)/a \ u) Hypertyper highscore' \
     -e "s/NetHack 3.4.3/NetHack $NH_VERSION/g" /home/nethack/dgl_menu_main_user.txt && \
     sed -i 's/boulder:0/boulder:`/g' /home/nethack/dgl-default-rcfile.nh$NH_SHORT_VERSION
 
@@ -95,6 +99,8 @@ RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/
 
 COPY --from=builder /build/target/x86_64-unknown-linux-gnu/release/nethack /home/nethack/highscore
 COPY robots /home/nethack/robots
+COPY hypertyper /home/nethack/hypertyper
+
 # Configure SSH to use the custom script
 RUN echo "command=\"/home/nethack/dgamelaunch\" ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCyQJUz91Q0L9F4EtPpI8VfV5p2VoJYx1qOQ7kTQi0NiP4lRT0i... user@host" >> /root/.ssh/authorized_keys && \
     echo "ForceCommand /home/nethack/dgamelaunch 2>> /home/nethack/dgldir/login.log" >> /etc/ssh/sshd_config

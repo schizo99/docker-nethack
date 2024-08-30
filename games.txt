@@ -1,0 +1,33 @@
+DEFINE {
+  game_path = "/robots"
+  game_name = "Robots"
+  short_name = "ROBOTS"
+  game_args = "/robots", "-u", "%n", "-p", "/dgldir/highscore.txt"
+  inprogressdir = "%rinprogress-robots/"
+  ttyrecdir = "%ruserdata/%n/ttyrec/"
+}
+
+DEFINE {
+  game_path = "/robots"
+  game_name = "Robots"
+  short_name = "ROBOTS_HIGHSCORE"
+  game_args = "/robots", "-s", "-p", "/dgldir/highscore.txt"
+  inprogressdir = "%rinprogress-robots/"
+}
+
+DEFINE {
+  game_path = "/hypertyper"
+  game_name = "Hypertyper"
+  short_name = "HYPERTYPER"
+  game_args = "/hypertyper", "-u", "%n", "-p", "/dgldir/ht_highscore.txt"
+  inprogressdir = "%rinprogress-robots/"
+  ttyrecdir = "%ruserdata/%n/ttyrec/"
+}
+
+DEFINE {
+  game_path = "/hypertyper"
+  game_name = "Hypertyper"
+  short_name = "HYPERTYPER_HIGHSCORE"
+  game_args = "/hypertyper", "-s", "-p", "/dgldir/ht_highscore.txt"
+  inprogressdir = "%rinprogress-robots/"
+}
