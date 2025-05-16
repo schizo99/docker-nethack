@@ -58,7 +58,7 @@ RUN mv /home/nethack/nh$NH_SHORT_VERSION/var/ /home/nethack/ && \
 
 RUN mkdir /home/nethack/dgldir/dumplog && \
     chown games:games /home/nethack/dgldir/dumplog && \
-    sed -i -e '$a\'$'\n''DUMPLOGFILE=/dgldir/dumplog/nethack.%n.%d.log' /home/nethack/nh$NH_SHORT_VERSION/sysconf
+    sed -i -e '$aDUMPLOGFILE=/dgldir/dumplog/nethack.%n.%d.log' /home/nethack/nh$NH_SHORT_VERSION/sysconf
 
 RUN sed -i \
   -e 's/^chroot_path =.*/chroot_path = \"\/home\/nethack\/\"/g' \
