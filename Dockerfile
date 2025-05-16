@@ -56,6 +56,8 @@ RUN mv /home/nethack/nh$NH_SHORT_VERSION/var/ /home/nethack/ && \
   mv -f /nh$NH_SHORT_VERSION /home/nethack/ && \
   chown -R games:games /home/nethack/nh$NH_SHORT_VERSION
 
+RUN sed -i -e '$a\'$'\n''DUMPLOGFILE=/dgldir/userdata/%n/dumplog/nethack.%n.%d.log' /home/nethack/nh$NH_SHORT_VERSION
+
 RUN sed -i \
   -e 's/^chroot_path =.*/chroot_path = \"\/home\/nethack\/\"/g' \
   -e 's/# menu_max_idle_time/menu_max_idle_time/g' \
