@@ -9,8 +9,8 @@ RUN RUSTFLAGS="-C target-feature=+crt-static" cargo build --release --target x86
 FROM debian as base
 
 # Set the Nethack version
-ENV NH_SHORT_VERSION=367
-ENV NH_VERSION=3.6.7
+ENV NH_SHORT_VERSION=370
+ENV NH_VERSION=3.7.0
 RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y autoconf bison \
@@ -21,8 +21,8 @@ RUN \
 RUN locale-gen en_US.UTF-8
 
 RUN mkdir /home/nethack-temp/ && cd /home/nethack-temp/ && \
-  wget http://nethack.org/download/$NH_VERSION/nethack-$NH_SHORT_VERSION-src.tgz && \
-  tar -xzf nethack-$NH_SHORT_VERSION-src.tgz && cd NetHack-$NH_VERSION
+  git clone https://github.com/NetHack/NetHack NetHack-$NH_VERSION && \
+  cd NetHack-$NH_VERSION && git checkout NetHack-3.7
 
 ADD hints /home/nethack-temp/NetHack-$NH_VERSION/hints
 ADD games.txt /games.txt
