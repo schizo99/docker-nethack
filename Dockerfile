@@ -45,7 +45,7 @@ RUN git clone https://github.com/paxed/dgamelaunch.git && \
   ./autogen.sh --enable-sqlite --enable-shmem --with-config-file=/home/nethack/etc/dgamelaunch.conf && \
   make && \
   sed -i \
-    -e 's/^CHROOT=.*/CHROOT=\"\/home\/nethack\/\"/g' \
+    -e 's/^CHROOT=.*/CHROOT=\"\/home\/nethack\"/g' \
     -e "s/^NHSUBDIR=.*/NHSUBDIR=\"\/nh$NH_SHORT_VERSION\/\"/g" \
     -e "s/^NH_VAR_PLAYGROUND=.*/NH_VAR_PLAYGROUND=\"\/nh$NH_SHORT_VERSION\/var\/\"/g" \
     -e "s/^NH_PLAYGROUND_FIXED=.*/NH_PLAYGROUND_FIXED=\"\/home\/nethack-compiled\/nh$NH_SHORT_VERSION\"/g" \
@@ -58,7 +58,12 @@ RUN mv /home/nethack/nh$NH_SHORT_VERSION/var/ /home/nethack/ && \
 
 RUN mkdir /home/nethack/dgldir/dumplog && \
     chown games:games /home/nethack/dgldir/dumplog && \
-    sed -i -e '$aDUMPLOGFILE=/dgldir/dumplog/nethack.%n.%d.log' /home/nethack/nh$NH_SHORT_VERSION/sysconf
+    sed -i -e '$aDUMPLOGFILE=/dgldir/dumplog/nethack.%n.%d.log' \
+      -e "s/^GDB/#GDB/g" \
+      -e "s/^GDBPATH/#/g" \
+      -e "s/^GREPPATH/#/g" \
+      -e "s/^PANICTRACE_GDB/#/g" \
+      -e "s/^PANICTRACE_LIBC/#/g" /home/nethack/nh$NH_SHORT_VERSION/sysconf
 
 RUN sed -i \
   -e 's/^chroot_path =.*/chroot_path = \"\/home\/nethack\/\"/g' \
