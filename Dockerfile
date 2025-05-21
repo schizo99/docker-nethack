@@ -9,26 +9,26 @@ RUN RUSTFLAGS="-C target-feature=+crt-static" cargo build --release --target x86
 FROM debian as base
 
 # Set the Nethack version
-ENV NH_SHORT_VERSION=367
-ENV NH_VERSION=3.6.7
+ENV NH_SHORT_VERSION=370
+ENV NH_VERSION=3.7.0
 RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y autoconf bison \
     bsdmainutils flex gcc git groff libncursesw5-dev libsqlite3-dev make \
-    ncurses-dev sqlite3 tar locales wget && \
+    ncurses-dev sqlite3 tar locales wget curl && \
   apt-get clean
 
 RUN locale-gen en_US.UTF-8
 
 RUN mkdir /home/nethack-temp/ && cd /home/nethack-temp/ && \
-  wget http://nethack.org/download/$NH_VERSION/nethack-$NH_SHORT_VERSION-src.tgz && \
-  tar -xzf nethack-$NH_SHORT_VERSION-src.tgz && cd NetHack-$NH_VERSION
+  git clone https://github.com/NetHack/NetHack NetHack-$NH_VERSION && \
+  cd NetHack-$NH_VERSION && git checkout NetHack-3.7
 
 ADD hints /home/nethack-temp/NetHack-$NH_VERSION/hints
 ADD games.txt /games.txt
 RUN cd /home/nethack-temp/NetHack-$NH_VERSION && \
       sed -i '/enter_explore_mode(VOID_ARGS)/{n;s/{/{ return 0;/}' src/cmd.c && \
-      sh sys/unix/setup.sh hints && make all && make install
+      sh sys/unix/setup.sh hints && make fetch-lua && make all && make install
 
 RUN git clone https://github.com/paxed/dgamelaunch.git && \
   cp /games.txt dgamelaunch/games.txt && \
@@ -45,7 +45,7 @@ RUN git clone https://github.com/paxed/dgamelaunch.git && \
   ./autogen.sh --enable-sqlite --enable-shmem --with-config-file=/home/nethack/etc/dgamelaunch.conf && \
   make && \
   sed -i \
-    -e 's/^CHROOT=.*/CHROOT=\"\/home\/nethack\/\"/g' \
+    -e 's/^CHROOT=.*/CHROOT=\"\/home\/nethack\"/g' \
     -e "s/^NHSUBDIR=.*/NHSUBDIR=\"\/nh$NH_SHORT_VERSION\/\"/g" \
     -e "s/^NH_VAR_PLAYGROUND=.*/NH_VAR_PLAYGROUND=\"\/nh$NH_SHORT_VERSION\/var\/\"/g" \
     -e "s/^NH_PLAYGROUND_FIXED=.*/NH_PLAYGROUND_FIXED=\"\/home\/nethack-compiled\/nh$NH_SHORT_VERSION\"/g" \
@@ -58,7 +58,12 @@ RUN mv /home/nethack/nh$NH_SHORT_VERSION/var/ /home/nethack/ && \
 
 RUN mkdir /home/nethack/dgldir/dumplog && \
     chown games:games /home/nethack/dgldir/dumplog && \
-    sed -i -e '$aDUMPLOGFILE=/dgldir/dumplog/nethack.%n.%d.log' /home/nethack/nh$NH_SHORT_VERSION/sysconf
+    sed -i -e '$aDUMPLOGFILE=/dgldir/dumplog/nethack.%n.%d.log' \
+      -e "s/^GDB/#GDB/g" \
+      -e "s/^GDBPATH/#/g" \
+      -e "s/^GREPPATH/#/g" \
+      -e "s/^PANICTRACE_GDB/#/g" \
+      -e "s/^PANICTRACE_LIBC/#/g" /home/nethack/nh$NH_SHORT_VERSION/sysconf
 
 RUN sed -i \
   -e 's/^chroot_path =.*/chroot_path = \"\/home\/nethack\/\"/g' \
