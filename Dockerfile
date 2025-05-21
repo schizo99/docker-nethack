@@ -15,7 +15,7 @@ RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y autoconf bison \
     bsdmainutils flex gcc git groff libncursesw5-dev libsqlite3-dev make \
-    ncurses-dev sqlite3 tar locales wget lua && \
+    ncurses-dev sqlite3 tar locales wget lua5.4 && \
   apt-get clean
 
 RUN locale-gen en_US.UTF-8
