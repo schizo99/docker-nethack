@@ -15,7 +15,7 @@ RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y autoconf bison \
     bsdmainutils flex gcc git groff libncursesw5-dev libsqlite3-dev make \
-    ncurses-dev sqlite3 tar locales wget lua5.4 && \
+    ncurses-dev sqlite3 tar locales wget && \
   apt-get clean
 
 RUN locale-gen en_US.UTF-8
@@ -28,7 +28,7 @@ ADD hints /home/nethack-temp/NetHack-$NH_VERSION/hints
 ADD games.txt /games.txt
 RUN cd /home/nethack-temp/NetHack-$NH_VERSION && \
       sed -i '/enter_explore_mode(VOID_ARGS)/{n;s/{/{ return 0;/}' src/cmd.c && \
-      sh sys/unix/setup.sh hints && make all && make install
+      sh sys/unix/setup.sh hints && make fetch-lua && make all && make install
 
 RUN git clone https://github.com/paxed/dgamelaunch.git && \
   cp /games.txt dgamelaunch/games.txt && \
