@@ -14,7 +14,7 @@ ENV NH_VERSION=3.7.0
 RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y autoconf bison \
-    bsdmainutils flex gcc git groff libncursesw6-dev libsqlite3-dev make \
+    bsdmainutils flex gcc git groff libncursesw5-dev libsqlite3-dev make \
     ncurses-dev sqlite3 tar locales wget curl && \
   apt-get clean
 
@@ -30,6 +30,7 @@ RUN cd /home/nethack-temp/NetHack-$NH_VERSION && \
       sed -i '/enter_explore_mode(VOID_ARGS)/{n;s/{/{ return 0;/}' src/cmd.c && \
       sh sys/unix/setup.sh hints && make fetch-lua && make all && make install
 
+# Ensure env/flags select wide-char ncurses during configure+make:
 RUN git clone https://github.com/paxed/dgamelaunch.git && \
   cp /games.txt dgamelaunch/games.txt && \
   cd dgamelaunch && \
@@ -42,10 +43,14 @@ RUN git clone https://github.com/paxed/dgamelaunch.git && \
     strftime(time_buffer, sizeof(time_buffer), "%Y-%m-%d %H:%M:%S", timeinfo); \
     fprintf(stderr, "[%s] Welcome, %s!\\n", time_buffer, me->username); \
     fflush(stderr);' dgamelaunch.c && \
+  export CPPFLAGS="-D_XOPEN_SOURCE_EXTENDED" && \
+  export PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=1 && \
+  CFLAGS="$(pkg-config --cflags ncursesw 2>/dev/null || echo)" \
+  LDFLAGS="$(pkg-config --libs ncursesw 2>/dev/null || echo -lncursesw)" \
   ./autogen.sh --enable-sqlite --enable-shmem --with-config-file=/home/nethack/etc/dgamelaunch.conf && \
-  make && \
+  make -j"$(nproc)" && \
   sed -i \
-    -e 's/^CHROOT=.*/CHROOT=\"\/home\/nethack\"/g' \
+    -e 's/^CHROOT=.*/CHROOT="\/home\/nethack"/g' \
     -e "s/^NHSUBDIR=.*/NHSUBDIR=\"\/nh$NH_SHORT_VERSION\/\"/g" \
     -e "s/^NH_VAR_PLAYGROUND=.*/NH_VAR_PLAYGROUND=\"\/nh$NH_SHORT_VERSION\/var\/\"/g" \
     -e "s/^NH_PLAYGROUND_FIXED=.*/NH_PLAYGROUND_FIXED=\"\/home\/nethack-compiled\/nh$NH_SHORT_VERSION\"/g" \
