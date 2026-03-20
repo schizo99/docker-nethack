@@ -6,7 +6,7 @@ COPY ./nethack .
 
 RUN RUSTFLAGS="-C target-feature=+crt-static" cargo build --release --target x86_64-unknown-linux-gnu
 
-FROM debian as base
+FROM debian:12-slim as base
 
 # Set the Nethack version
 ENV NH_SHORT_VERSION=370
@@ -14,7 +14,7 @@ ENV NH_VERSION=3.7.0
 RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y autoconf bison \
-    bsdmainutils flex gcc git groff libncursesw6-dev libsqlite3-dev make \
+    bsdmainutils flex gcc git groff libncursesw5-dev libsqlite3-dev make \
     ncurses-dev sqlite3 tar locales wget curl && \
   apt-get clean
 
