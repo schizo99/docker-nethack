@@ -14,7 +14,7 @@ ENV NH_VERSION=3.7.0
 RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y autoconf bison \
-    bsdmainutils flex gcc git groff libncursesw5-dev libsqlite3-dev make \
+    bsdmainutils flex gcc git groff libncursesw6-dev libsqlite3-dev make \
     ncurses-dev sqlite3 tar locales wget curl && \
   apt-get clean
 
