@@ -1,4 +1,4 @@
-FROM rust:buster as builder
+FROM rust:buster AS builder
 LABEL maintainer="schizo99@gmail.com"
 
 WORKDIR /build
@@ -6,11 +6,11 @@ COPY ./nethack .
 
 RUN RUSTFLAGS="-C target-feature=+crt-static" cargo build --release --target x86_64-unknown-linux-gnu
 
-FROM debian:12-slim as base
+FROM debian:12-slim AS base
 
 # Set the Nethack version
-ENV NH_SHORT_VERSION=370
-ENV NH_VERSION=3.7.0
+ENV NH_SHORT_VERSION=500
+ENV NH_VERSION=5.0.0
 RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y autoconf bison \
@@ -22,7 +22,7 @@ RUN locale-gen en_US.UTF-8
 
 RUN mkdir /home/nethack-temp/ && cd /home/nethack-temp/ && \
   git clone https://github.com/NetHack/NetHack NetHack-$NH_VERSION && \
-  cd NetHack-$NH_VERSION && git checkout NetHack-3.7
+  cd NetHack-$NH_VERSION && git checkout NetHack-5.0
 
 ADD hints /home/nethack-temp/NetHack-$NH_VERSION/hints
 ADD games.txt /games.txt
