@@ -10,7 +10,7 @@
 
 
 PREFIX=/
-HACKDIR=$(PREFIX)nh370
+HACKDIR=$(PREFIX)nh500
 #PREFIX=$(wildcard ~)/nh/install
 #HACKDIR=$(PREFIX)/games/lib/$(GAME)dir
 #SHELLDIR = $(PREFIX)/games
