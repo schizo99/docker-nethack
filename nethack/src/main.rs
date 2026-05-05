@@ -1,7 +1,7 @@
 use console::Term;
 fn main() {
     let term = Term::stdout();
-    let output = std::process::Command::new("/nh370/nethack")
+    let output = std::process::Command::new("/nh500/nethack")
         .arg("-s")
         .output()
         .expect("failed to execute process");
