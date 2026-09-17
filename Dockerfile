@@ -63,7 +63,8 @@ RUN mkdir /home/nethack/dgldir/dumplog && \
       -e "s/^GDBPATH/#/g" \
       -e "s/^GREPPATH/#/g" \
       -e "s/^PANICTRACE_GDB/#/g" \
-      -e "s/^PANICTRACE_LIBC/#/g" /home/nethack/nh$NH_SHORT_VERSION/sysconf
+      -e "s/^PANICTRACE_LIBC/#/g" \
+      -e '$aWIZARD=*' /home/nethack/nh$NH_SHORT_VERSION/sysconf
 
 RUN sed -i \
   -e 's/^chroot_path =.*/chroot_path = \"\/home\/nethack\/\"/g' \
@@ -75,7 +76,8 @@ RUN sed -i \
   -e '/play_game \"NH343\"/a \        commands\[\"u\"\] = play_game \"HYPERTYPER_HIGHSCORE\"' \
   -e '/# third game/ r games.txt' \
   -e "s/NetHack 3.4.3/NetHack $NH_VERSION/g" \
-  -e "s/343/$NH_SHORT_VERSION/g" /home/nethack/etc/dgamelaunch.conf
+  -e "s/343/$NH_SHORT_VERSION/g" \
+  -e "s#\"/nh500/nethack\", \"-u\", \"%n\"#\"/nh500/nethack\", \"-D\", \"-u\", \"%n\"#g" /home/nethack/etc/dgamelaunch.conf
 
 RUN sed -i \
     -e '/ p)/a \ r) Play Robots' \
