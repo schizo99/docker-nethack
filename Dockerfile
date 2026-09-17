@@ -27,7 +27,7 @@ RUN mkdir /home/nethack-temp/ && cd /home/nethack-temp/ && \
 ADD hints /home/nethack-temp/NetHack-$NH_VERSION/hints
 ADD games.txt /games.txt
 RUN cd /home/nethack-temp/NetHack-$NH_VERSION && \
-      sed -i '/enter_explore_mode(VOID_ARGS)/{n;s/{/{ return 0;/}' src/cmd.c && \
+#      sed -i '/enter_explore_mode(VOID_ARGS)/{n;s/{/{ return 0;/}' src/cmd.c && \
       sh sys/unix/setup.sh hints && make fetch-lua && make all && make install
 
 RUN git clone https://github.com/paxed/dgamelaunch.git && \
